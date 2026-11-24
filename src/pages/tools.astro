@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import UuidTool from '../components/tools/UuidTool.astro';
+import JsonTool from '../components/tools/JsonTool.astro';
+import TimestampTool from '../components/tools/TimestampTool.astro';
+import '../styles/tools.css';
+---
+
+<BaseLayout
+  title="Инструменты"
+  description="Локальные онлайн-инструменты: генератор UUID v4, JSON Formatter & Validator и конвертер Unix Timestamp."
+>
+  <section class="page-intro">
+    <div class="container">
+      <span class="mono-label">WORKBENCH · 3 UTILITIES</span>
+      <h1>Полезные онлайн-инструменты</h1>
+      <p class="page-intro-lead">
+        Все операции выполняются непосредственно в вашем браузере без передачи данных на сервер.
+      </p>
+
+      <nav class="tools-nav" aria-label="Переход к инструментам">
+        <a href="#uuid" class="tools-anchor"><span class="mono-label">01</span> UUID v4</a>
+        <a href="#json" class="tools-anchor"><span class="mono-label">02</span> JSON Formatter</a>
+        <a href="#timestamp" class="tools-anchor"><span class="mono-label">03</span> Unix Timestamp</a>
+      </nav>
+    </div>
+  </section>
+
+  <section class="container tools-stack">
+    <UuidTool />
+    <JsonTool />
+    <TimestampTool />
+  </section>
+</BaseLayout>

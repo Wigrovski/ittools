@@ -1,0 +1,245 @@
+<section id="timestamp" class="card tool-card" aria-labelledby="ts-title">
+  <div class="tool-header">
+    <div>
+      <span class="mono-label">03 / TIME &amp; EPOCH</span>
+      <h2 id="ts-title" class="tool-title">Конвертер Unix Timestamp</h2>
+    </div>
+    <p class="tool-subtitle">
+      Двусторонний перевод между Epoch-временем (сек/мс) и читаемыми форматами даты.
+    </p>
+  </div>
+
+  <div class="ts-live-bar">
+    <div class="ts-live-values">
+      <div>
+        <span class="mono-label">Текущий Unix (сек)</span>
+        <div class="ts-live-num" id="ts-now-sec">—</div>
+      </div>
+      <div>
+        <span class="mono-label">Миллисекунды</span>
+        <div class="ts-live-num" id="ts-now-ms">—</div>
+      </div>
+    </div>
+    <div class="control-actions">
+      <button type="button" id="ts-copy-now" class="btn btn-secondary btn-sm">Копировать сек</button>
+      <button type="button" id="ts-toggle-live" class="btn btn-secondary btn-sm">Пауза</button>
+    </div>
+  </div>
+
+  <div class="ts-grid">
+    <!-- Unix -> Human Date -->
+    <div class="ts-pane">
+      <h3 class="ts-pane-title">Unix Timestamp &rarr; Дата</h3>
+      <div class="ts-input-row">
+        <label for="ts-input-unix" class="sr-only">Unix timestamp</label>
+        <input
+          id="ts-input-unix"
+          type="text"
+          inputmode="numeric"
+          class="input-text"
+          placeholder="Например: 1700000000"
+        />
+        <button type="button" id="ts-use-now" class="btn btn-secondary btn-sm">Сейчас</button>
+      </div>
+      <div id="ts-unix-error" class="tool-status" aria-live="polite"></div>
+
+      <dl class="ts-results">
+        <div class="ts-result-row">
+          <dt class="mono-label">Определено как</dt>
+          <dd id="ts-out-unit">—</dd>
+        </div>
+        <div class="ts-result-row">
+          <dt class="mono-label">ISO 8601 (UTC)</dt>
+          <dd id="ts-out-iso">—</dd>
+        </div>
+        <div class="ts-result-row">
+          <dt class="mono-label">Локальное время</dt>
+          <dd id="ts-out-local">—</dd>
+        </div>
+        <div class="ts-result-row">
+          <dt class="mono-label">Относительно</dt>
+          <dd id="ts-out-relative">—</dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Human Date -> Unix -->
+    <div class="ts-pane">
+      <h3 class="ts-pane-title">Дата &rarr; Unix Timestamp</h3>
+      <div class="ts-input-row">
+        <label for="ts-input-date" class="sr-only">Дата и время</label>
+        <input id="ts-input-date" type="datetime-local" step="1" class="input-text" />
+      </div>
+
+      <dl class="ts-results">
+        <div class="ts-result-row">
+          <dt class="mono-label">Unix (секунды)</dt>
+          <dd class="ts-dd-copy">
+            <span id="ts-date-sec">—</span>
+            <button type="button" id="ts-copy-date-sec" class="btn btn-secondary btn-sm">Копировать</button>
+          </dd>
+        </div>
+        <div class="ts-result-row">
+          <dt class="mono-label">Unix (миллисекунды)</dt>
+          <dd class="ts-dd-copy">
+            <span id="ts-date-ms">—</span>
+            <button type="button" id="ts-copy-date-ms" class="btn btn-secondary btn-sm">Копировать</button>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<script>
+  const nowSecEl = document.getElementById('ts-now-sec');
+  const nowMsEl = document.getElementById('ts-now-ms');
+  const toggleLiveBtn = document.getElementById('ts-toggle-live') as HTMLButtonElement | null;
+  const copyNowBtn = document.getElementById('ts-copy-now') as HTMLButtonElement | null;
+
+  const unixInput = document.getElementById('ts-input-unix') as HTMLInputElement | null;
+  const unixErrEl = document.getElementById('ts-unix-error');
+  const outUnitEl = document.getElementById('ts-out-unit');
+  const outIsoEl = document.getElementById('ts-out-iso');
+  const outLocalEl = document.getElementById('ts-out-local');
+  const outRelEl = document.getElementById('ts-out-relative');
+
+  const dateInput = document.getElementById('ts-input-date') as HTMLInputElement | null;
+  const dateSecEl = document.getElementById('ts-date-sec');
+  const dateMsEl = document.getElementById('ts-date-ms');
+
+  let livePaused = false;
+
+  function updateLiveClock() {
+    if (livePaused) return;
+    const ms = Date.now();
+    const sec = Math.floor(ms / 1000);
+    if (nowSecEl) nowSecEl.textContent = String(sec);
+    if (nowMsEl) nowMsEl.textContent = String(ms);
+  }
+
+  function formatRelative(targetMs: number): string {
+    const diffSec = Math.round((targetMs - Date.now()) / 1000);
+    const abs = Math.abs(diffSec);
+    const rtf = new Intl.RelativeTimeFormat('ru', { numeric: 'auto' });
+    if (abs < 60) return rtf.format(diffSec, 'second');
+    if (abs < 3600) return rtf.format(Math.round(diffSec / 60), 'minute');
+    if (abs < 86400) return rtf.format(Math.round(diffSec / 3600), 'hour');
+    return rtf.format(Math.round(diffSec / 86400), 'day');
+  }
+
+  function convertUnixToDate() {
+    if (!unixInput) return;
+    const raw = unixInput.value.trim();
+    if (!raw) {
+      if (unixErrEl) unixErrEl.textContent = '';
+      if (outUnitEl) outUnitEl.textContent = '—';
+      if (outIsoEl) outIsoEl.textContent = '—';
+      if (outLocalEl) outLocalEl.textContent = '—';
+      if (outRelEl) outRelEl.textContent = '—';
+      return;
+    }
+
+    const num = Number(raw);
+    if (!Number.isFinite(num)) {
+      if (unixErrEl) {
+        unixErrEl.textContent = 'Введите корректное числовое значение';
+        unixErrEl.className = 'tool-status status-err';
+      }
+      return;
+    }
+
+    const isMs = Math.abs(num) >= 1e11;
+    const ms = isMs ? num : num * 1000;
+    const date = new Date(ms);
+
+    if (Number.isNaN(date.getTime())) {
+      if (unixErrEl) {
+        unixErrEl.textContent = 'Значение выходит за допустимый диапазон дат';
+        unixErrEl.className = 'tool-status status-err';
+      }
+      return;
+    }
+
+    if (unixErrEl) {
+      unixErrEl.textContent = '';
+      unixErrEl.className = 'tool-status';
+    }
+    if (outUnitEl) outUnitEl.textContent = isMs ? 'Миллисекунды (ms)' : 'Секунды (s)';
+    if (outIsoEl) outIsoEl.textContent = date.toISOString();
+    if (outLocalEl) {
+      outLocalEl.textContent = new Intl.DateTimeFormat('ru-RU', {
+        dateStyle: 'medium',
+        timeStyle: 'medium',
+      }).format(date);
+    }
+    if (outRelEl) outRelEl.textContent = formatRelative(ms);
+  }
+
+  function convertDateToUnix() {
+    if (!dateInput || !dateInput.value) return;
+    const date = new Date(dateInput.value);
+    if (Number.isNaN(date.getTime())) return;
+    const ms = date.getTime();
+    const sec = Math.floor(ms / 1000);
+    if (dateSecEl) dateSecEl.textContent = String(sec);
+    if (dateMsEl) dateMsEl.textContent = String(ms);
+  }
+
+  function toLocalDatetimeInputValue(d: Date): string {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+
+  toggleLiveBtn?.addEventListener('click', () => {
+    livePaused = !livePaused;
+    toggleLiveBtn.textContent = livePaused ? 'Продолжить' : 'Пауза';
+    if (!livePaused) updateLiveClock();
+  });
+
+  copyNowBtn?.addEventListener('click', async () => {
+    if (!nowSecEl?.textContent) return;
+    await navigator.clipboard.writeText(nowSecEl.textContent);
+    copyNowBtn.textContent = 'Скопировано';
+    setTimeout(() => (copyNowBtn.textContent = 'Копировать сек'), 1500);
+  });
+
+  document.getElementById('ts-use-now')?.addEventListener('click', () => {
+    if (!unixInput) return;
+    unixInput.value = String(Math.floor(Date.now() / 1000));
+    convertUnixToDate();
+  });
+
+  document.getElementById('ts-copy-date-sec')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    if (!dateSecEl?.textContent || dateSecEl.textContent === '—') return;
+    await navigator.clipboard.writeText(dateSecEl.textContent);
+    btn.textContent = 'Скопировано';
+    setTimeout(() => (btn.textContent = 'Копировать'), 1500);
+  });
+
+  document.getElementById('ts-copy-date-ms')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    if (!dateMsEl?.textContent || dateMsEl.textContent === '—') return;
+    await navigator.clipboard.writeText(dateMsEl.textContent);
+    btn.textContent = 'Скопировано';
+    setTimeout(() => (btn.textContent = 'Копировать'), 1500);
+  });
+
+  unixInput?.addEventListener('input', convertUnixToDate);
+  dateInput?.addEventListener('input', convertDateToUnix);
+
+  // Initialize with current time
+  const now = new Date();
+  if (unixInput) {
+    unixInput.value = String(Math.floor(now.getTime() / 1000));
+    convertUnixToDate();
+  }
+  if (dateInput) {
+    dateInput.value = toLocalDatetimeInputValue(now);
+    convertDateToUnix();
+  }
+
+  updateLiveClock();
+  window.setInterval(updateLiveClock, 1000);
+</script>

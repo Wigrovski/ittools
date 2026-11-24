@@ -1,0 +1,377 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const tools = [
+  {
+    index: '01',
+    title: 'Генератор UUID v4',
+    tag: 'IDENTIFIER',
+    desc: 'Криптографически случайные идентификаторы с поддержкой пакетной генерации и форматирования.',
+    href: '/tools/#uuid',
+  },
+  {
+    index: '02',
+    title: 'JSON Formatter',
+    tag: 'DATA FORMAT',
+    desc: 'Моментальная валидация синтаксиса, аккуратное форматирование и минификация структур данных.',
+    href: '/tools/#json',
+  },
+  {
+    index: '03',
+    title: 'Unix Timestamp',
+    tag: 'TIME & EPOCH',
+    desc: 'Двусторонний перевод между Epoch-временем (секунды и миллисекунды) и читаемой датой.',
+    href: '/tools/#timestamp',
+  },
+];
+
+const principles = [
+  {
+    num: '01',
+    title: 'Локальное выполнение',
+    text: 'Все вычисления происходят в памяти вашего браузера. Данные не отправляются на сторонние серверы.',
+  },
+  {
+    num: '02',
+    title: 'Чистая статика',
+    text: 'Собранные HTML-страницы и локальные шрифты без тяжёлых фреймворков, CDN и фоновых трекеров.',
+  },
+  {
+    num: '03',
+    title: 'Точность формы',
+    text: 'Европейская модульная сетка, выверенная типографика и фокус на самой задаче без визуального шума.',
+  },
+];
+---
+
+<BaseLayout
+  title="ITTOOLS"
+  description="Независимый минималистичный проект цифровых технологий и локальных онлайн-инструментов для разработчиков."
+>
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <span class="mono-label hero-eyebrow">INDEX 01 · DIGITAL UTILITIES ATELIER</span>
+        <h1 class="hero-title">Точные инструменты для повседневной инженерии.</h1>
+        <p class="hero-lead">
+          Независимый веб-проект, собранный как аккуратный рабочий стол: локальные утилиты, чистая
+          типографика, мгновенный отклик и ноль лишних зависимостей.
+        </p>
+
+        <div class="hero-actions">
+          <a href="/tools/" class="btn btn-primary">Открыть инструменты</a>
+          <a href="/about/" class="btn btn-secondary">О проекте</a>
+        </div>
+
+        <div class="hero-metrics">
+          <div class="metric-item">
+            <span class="mono-label">RUNTIME</span>
+            <span class="metric-val">100% Client-Side</span>
+          </div>
+          <div class="metric-item">
+            <span class="mono-label">TRACKING</span>
+            <span class="metric-val">0 Cookies · 0 CDN</span>
+          </div>
+          <div class="metric-item">
+            <span class="mono-label">OUTPUT</span>
+            <span class="metric-val">Static HTML</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="diagram-frame card">
+          <div class="diagram-top">
+            <span class="mono-label">GRID SPEC / 12-COL</span>
+            <span class="mono-label accent-dot">ACTIVE</span>
+          </div>
+          <svg viewBox="0 0 360 280" fill="none" class="hero-svg">
+            <defs>
+              <pattern id="minor-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+                <path d="M 24 0 L 0 0 0 24" stroke="#E2E2DC" stroke-width="0.75" />
+              </pattern>
+            </defs>
+            <rect width="360" height="280" fill="url(#minor-grid)" />
+
+            <!-- Architectural geometric modules -->
+            <rect x="36" y="36" width="132" height="96" rx="4" fill="#FFFFFF" stroke="#141413" stroke-width="1.25" />
+            <circle cx="60" cy="60" r="8" fill="#1D4ED8" />
+            <line x1="78" y1="60" x2="144" y2="60" stroke="#141413" stroke-width="1.25" />
+            <line x1="52" y1="88" x2="144" y2="88" stroke="#C8C8BF" stroke-width="1.25" />
+            <line x1="52" y1="104" x2="118" y2="104" stroke="#C8C8BF" stroke-width="1.25" />
+
+            <rect x="192" y="36" width="132" height="96" rx="4" fill="#EFF4FF" stroke="#1D4ED8" stroke-width="1.25" />
+            <path d="M216 84L244 56L268 80L300 48" stroke="#1D4ED8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="244" cy="56" r="3.5" fill="#1D4ED8" />
+            <circle cx="300" cy="48" r="3.5" fill="#1D4ED8" />
+
+            <rect x="36" y="156" width="288" height="88" rx="4" fill="#FFFFFF" stroke="#141413" stroke-width="1.25" />
+            <rect x="52" y="176" width="56" height="48" rx="3" fill="#EFEFE9" stroke="#C8C8BF" />
+            <path d="M80 188V212M68 200H92" stroke="#141413" stroke-width="1.5" stroke-linecap="round" />
+            <line x1="126" y1="186" x2="296" y2="186" stroke="#141413" stroke-width="1.5" />
+            <line x1="126" y1="204" x2="256" y2="204" stroke="#C8C8BF" stroke-width="1.5" />
+            <line x1="126" y1="220" x2="210" y2="220" stroke="#C8C8BF" stroke-width="1.5" />
+          </svg>
+          <div class="diagram-bottom">
+            <span class="mono-label">LOCAL ASSETS · SUB-SECOND LOAD</span>
+            <span class="mono-label">NGINX READY</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <span class="mono-label">WORKBENCH</span>
+          <h2 class="section-title">Онлайн-инструменты</h2>
+        </div>
+        <a href="/tools/" class="link-arrow">Все утилиты &rarr;</a>
+      </div>
+
+      <div class="cards-grid">
+        {
+          tools.map((tool) => (
+            <a href={tool.href} class="card card-interactive tool-preview">
+              <div class="tool-preview-top">
+                <span class="mono-label">{tool.index} / {tool.tag}</span>
+                <span class="arrow-mark" aria-hidden="true">&rarr;</span>
+              </div>
+              <h3 class="tool-preview-title">{tool.title}</h3>
+              <p class="tool-preview-desc">{tool.desc}</p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-muted">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <span class="mono-label">PRINCIPLES</span>
+          <h2 class="section-title">Инженерная дисциплина</h2>
+        </div>
+      </div>
+
+      <div class="principles-grid">
+        {
+          principles.map((item) => (
+            <article class="principle-item">
+              <span class="mono-label principle-num">{item.num}</span>
+              <h3 class="principle-title">{item.title}</h3>
+              <p class="principle-text">{item.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: clamp(2.75rem, 6vw, 5.25rem) 0;
+    border-bottom: 1px solid var(--border-hairline);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .hero-eyebrow {
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+
+  .hero-title {
+    margin: 0 0 1.25rem;
+    font-size: clamp(2.125rem, 4.6vw, 3.375rem);
+    font-weight: 600;
+    letter-spacing: -0.038em;
+    line-height: 1.06;
+    max-width: 15ch;
+  }
+
+  .hero-lead {
+    margin: 0 0 1.75rem;
+    font-size: clamp(1rem, 1.5vw, 1.125rem);
+    color: var(--ink-secondary);
+    max-width: 50ch;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-hairline);
+  }
+
+  .metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .metric-val {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ink-primary);
+  }
+
+  .diagram-frame {
+    padding: 1rem;
+  }
+
+  .diagram-top,
+  .diagram-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .diagram-top {
+    padding-bottom: 0.75rem;
+  }
+
+  .diagram-bottom {
+    padding-top: 0.75rem;
+  }
+
+  .accent-dot {
+    color: var(--accent);
+  }
+
+  .hero-svg {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-sm);
+  }
+
+  .section {
+    padding: clamp(3rem, 6vw, 4.75rem) 0;
+  }
+
+  .section-muted {
+    background-color: var(--bg-surface);
+    border-top: 1px solid var(--border-hairline);
+  }
+
+  .link-arrow {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .link-arrow:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .tool-preview {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tool-preview-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .arrow-mark {
+    color: var(--ink-muted);
+    transition: transform var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
+  }
+
+  .tool-preview:hover .arrow-mark {
+    transform: translateX(3px);
+    color: var(--accent);
+  }
+
+  .tool-preview-title {
+    margin: 0;
+    font-size: 1.1875rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .tool-preview-desc {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--ink-secondary);
+  }
+
+  .principles-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .principle-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .principle-num {
+    color: var(--accent);
+  }
+
+  .principle-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  .principle-text {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--ink-secondary);
+  }
+
+  @media (max-width: 520px) {
+    .hero-metrics {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 780px) {
+    .cards-grid,
+    .principles-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 920px) {
+    .hero-grid {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3.5rem;
+    }
+  }
+</style>

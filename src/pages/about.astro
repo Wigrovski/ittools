@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="О проекте"
+  description="О независимом проекте ITTOOLS: философия европейского минимализма, локальные ресурсы и статическая архитектура."
+>
+  <section class="page-intro">
+    <div class="container">
+      <span class="mono-label">MANIFESTO · ABOUT</span>
+      <h1>О проекте ITTOOLS</h1>
+      <p class="page-intro-lead">
+        Независимая инициатива, созданная ради простых, быстрых и уважительных к пользователю
+        цифровых инструментов.
+      </p>
+    </div>
+  </section>
+
+  <section class="container about-layout">
+    <div class="prose">
+      <h2>Зачем этот проект</h2>
+      <p>
+        Большинство повседневных онлайн-утилит перегружены рекламой, всплывающими баннерами,
+        сторонними скриптами аналитики и медленными серверными запросами. ITTOOLS задуман как
+        спокойная альтернатива — аккуратное рабочее пространство, которое открывается мгновенно и
+        не мешает думать.
+      </p>
+
+      <h2>Техническая архитектура</h2>
+      <p>
+        Проект построен на <strong>Astro</strong> со статической генерацией HTML. После сборки сайт
+        представляет собой набор чистых HTML-страниц, CSS и минимального клиентского JavaScript —
+        без базы данных, без Node.js в продакшене и без внешних CDN.
+      </p>
+      <ul>
+        <li>Все шрифты (<code>Inter</code> и <code>JetBrains Mono</code>) упакованы локально.</li>
+        <li>Нулевое количество сторонних сетевых запросов.</li>
+        <li>Готовая статическая директория <code>dist/</code> для раздачи через обычный Nginx.</li>
+      </ul>
+
+      <h2>Дальнейшее развитие</h2>
+      <p>
+        Набор инструментов расширяется точечно: каждая новая утилита должна решать конкретную
+        инженерную задачу и полностью работать на стороне клиента.
+      </p>
+    </div>
+
+    <aside class="card spec-box">
+      <div class="mono-label spec-title">PROJECT SPECIFICATION</div>
+      <dl class="spec-list">
+        <div class="spec-row">
+          <dt class="mono-label">Генератор</dt>
+          <dd>Astro (Static HTML)</dd>
+        </div>
+        <div class="spec-row">
+          <dt class="mono-label">Типографика</dt>
+          <dd>Inter + JetBrains Mono (Local)</dd>
+        </div>
+        <div class="spec-row">
+          <dt class="mono-label">Backend / DB</dt>
+          <dd>Отсутствует</dd>
+        </div>
+        <div class="spec-row">
+          <dt class="mono-label">Хостинг</dt>
+          <dd>Любой static web server / Nginx</dd>
+        </div>
+      </dl>
+    </aside>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding-top: 2.75rem;
+    align-items: start;
+  }
+
+  .spec-box {
+    padding: 1.5rem;
+  }
+
+  .spec-title {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-hairline);
+    margin-bottom: 1rem;
+  }
+
+  .spec-list {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .spec-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .spec-row dd {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  @media (min-width: 860px) {
+    .about-layout {
+      grid-template-columns: 1.5fr 0.85fr;
+      gap: 3.5rem;
+    }
+  }
+</style>

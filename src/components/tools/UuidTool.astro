@@ -1,0 +1,135 @@
+<section id="uuid" class="card tool-card" aria-labelledby="uuid-title">
+  <div class="tool-header">
+    <div>
+      <span class="mono-label">01 / IDENTIFIER</span>
+      <h2 id="uuid-title" class="tool-title">Генератор UUID v4</h2>
+    </div>
+    <p class="tool-subtitle">
+      Криптографически случайные идентификаторы на базе <code>crypto.randomUUID()</code>.
+    </p>
+  </div>
+
+  <div class="tool-controls">
+    <div class="control-group">
+      <label for="uuid-count" class="control-label">Количество</label>
+      <select id="uuid-count" class="input-select">
+        <option value="1">1</option>
+        <option value="5" selected>5</option>
+        <option value="10">10</option>
+        <option value="25">25</option>
+      </select>
+    </div>
+
+    <label class="checkbox-label">
+      <input type="checkbox" id="uuid-upper" />
+      <span>Верхний регистр</span>
+    </label>
+
+    <label class="checkbox-label">
+      <input type="checkbox" id="uuid-no-hyphens" />
+      <span>Без дефисов</span>
+    </label>
+
+    <div class="control-actions">
+      <button type="button" id="uuid-generate" class="btn btn-primary btn-sm">Сгенерировать</button>
+      <button type="button" id="uuid-copy-all" class="btn btn-secondary btn-sm">Копировать все</button>
+    </div>
+  </div>
+
+  <div id="uuid-status" class="tool-status" aria-live="polite"></div>
+
+  <ul id="uuid-list" class="uuid-list" aria-label="Сгенерированные UUID"></ul>
+</section>
+
+<script>
+  const countEl = document.getElementById('uuid-count') as HTMLSelectElement | null;
+  const upperEl = document.getElementById('uuid-upper') as HTMLInputElement | null;
+  const noHyphensEl = document.getElementById('uuid-no-hyphens') as HTMLInputElement | null;
+  const genBtn = document.getElementById('uuid-generate') as HTMLButtonElement | null;
+  const copyAllBtn = document.getElementById('uuid-copy-all') as HTMLButtonElement | null;
+  const listEl = document.getElementById('uuid-list') as HTMLUListElement | null;
+  const statusEl = document.getElementById('uuid-status') as HTMLDivElement | null;
+
+  function makeUuid(): string {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  }
+
+  let currentUuids: string[] = [];
+
+  function formatUuid(raw: string): string {
+    let val = raw;
+    if (noHyphensEl?.checked) val = val.replace(/-/g, '');
+    if (upperEl?.checked) val = val.toUpperCase();
+    return val;
+  }
+
+  function showStatus(msg: string) {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.className = 'tool-status status-ok';
+    window.setTimeout(() => {
+      if (statusEl.textContent === msg) {
+        statusEl.textContent = '';
+        statusEl.className = 'tool-status';
+      }
+    }, 1800);
+  }
+
+  async function copyText(text: string, label: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      showStatus(label);
+    } catch {
+      showStatus('Не удалось скопировать в буфер обмена');
+    }
+  }
+
+  function renderUuids() {
+    if (!listEl) return;
+    listEl.innerHTML = '';
+    currentUuids.forEach((raw) => {
+      const formatted = formatUuid(raw);
+      const li = document.createElement('li');
+      li.className = 'uuid-item';
+
+      const code = document.createElement('code');
+      code.className = 'uuid-value';
+      code.textContent = formatted;
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-secondary btn-sm uuid-copy-btn';
+      btn.textContent = 'Копировать';
+      btn.addEventListener('click', () => copyText(formatted, `Скопировано: ${formatted}`));
+
+      li.append(code, btn);
+      listEl.appendChild(li);
+    });
+  }
+
+  function generateBatch() {
+    const count = Math.min(Math.max(Number(countEl?.value || 5), 1), 25);
+    currentUuids = Array.from({ length: count }, () => makeUuid());
+    renderUuids();
+  }
+
+  genBtn?.addEventListener('click', generateBatch);
+  countEl?.addEventListener('change', generateBatch);
+  upperEl?.addEventListener('change', renderUuids);
+  noHyphensEl?.addEventListener('change', renderUuids);
+
+  copyAllBtn?.addEventListener('click', () => {
+    const all = currentUuids.map(formatUuid).join('\n');
+    copyText(all, `Скопировано UUID: ${currentUuids.length}`);
+  });
+
+  generateBatch();
+</script>

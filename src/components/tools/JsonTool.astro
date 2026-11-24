@@ -1,0 +1,140 @@
+<section id="json" class="card tool-card" aria-labelledby="json-title">
+  <div class="tool-header">
+    <div>
+      <span class="mono-label">02 / DATA FORMAT</span>
+      <h2 id="json-title" class="tool-title">JSON Formatter &amp; Validator</h2>
+    </div>
+    <p class="tool-subtitle">
+      Проверка синтаксиса, форматирование с отступами и минификация JSON.
+    </p>
+  </div>
+
+  <div class="tool-controls">
+    <div class="control-actions">
+      <button type="button" id="json-format-2" class="btn btn-primary btn-sm">Формат (2 пробела)</button>
+      <button type="button" id="json-format-4" class="btn btn-secondary btn-sm">4 пробела</button>
+      <button type="button" id="json-minify" class="btn btn-secondary btn-sm">Минифицировать</button>
+      <button type="button" id="json-sample" class="btn btn-secondary btn-sm">Пример</button>
+      <button type="button" id="json-clear" class="btn btn-secondary btn-sm">Очистить</button>
+      <button type="button" id="json-copy" class="btn btn-secondary btn-sm">Копировать</button>
+    </div>
+  </div>
+
+  <div class="json-meta-bar">
+    <div id="json-status" class="tool-status" aria-live="polite"></div>
+    <div id="json-stats" class="mono-label">0 B · 0 строк</div>
+  </div>
+
+  <label for="json-input" class="sr-only">JSON ввод и результат</label>
+  <textarea
+    id="json-input"
+    class="code-textarea"
+    rows="11"
+    spellcheck="false"
+    placeholder='{"project": "ittools", "localOnly": true}'
+  ></textarea>
+</section>
+
+<script>
+  const inputEl = document.getElementById('json-input') as HTMLTextAreaElement | null;
+  const statusEl = document.getElementById('json-status') as HTMLDivElement | null;
+  const statsEl = document.getElementById('json-stats') as HTMLDivElement | null;
+
+  const sampleJson = {
+    project: 'ittools',
+    architecture: 'static-html',
+    privacy: {
+      cookies: false,
+      analytics: false,
+      networkCalls: 0,
+    },
+    utilities: ['uuid-v4', 'json-formatter', 'unix-timestamp'],
+  };
+
+  function setStatus(type: 'ok' | 'err' | 'neutral', text: string) {
+    if (!statusEl) return;
+    statusEl.textContent = text;
+    statusEl.className =
+      type === 'ok'
+        ? 'tool-status status-ok'
+        : type === 'err'
+          ? 'tool-status status-err'
+          : 'tool-status';
+  }
+
+  function updateStats(text: string) {
+    if (!statsEl) return;
+    const bytes = new TextEncoder().encode(text).length;
+    const lines = text ? text.split('\n').length : 0;
+    statsEl.textContent = `${bytes} B · ${lines} строк`;
+  }
+
+  function validateOnly() {
+    if (!inputEl) return;
+    const raw = inputEl.value.trim();
+    updateStats(inputEl.value);
+    if (!raw) {
+      setStatus('neutral', 'Вставьте JSON для проверки или форматирования');
+      return;
+    }
+    try {
+      JSON.parse(raw);
+      setStatus('ok', 'Валидный JSON');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Синтаксическая ошибка';
+      setStatus('err', `Ошибка: ${msg}`);
+    }
+  }
+
+  function transform(indent: number | null) {
+    if (!inputEl) return;
+    const raw = inputEl.value.trim();
+    if (!raw) {
+      setStatus('err', 'Поле пустое — вставьте JSON');
+      return;
+    }
+    try {
+      const parsed = JSON.parse(raw);
+      const formatted = indent === null ? JSON.stringify(parsed) : JSON.stringify(parsed, null, indent);
+      inputEl.value = formatted;
+      updateStats(formatted);
+      setStatus('ok', indent === null ? 'Минифицировано' : `Отформатировано (${indent} пробела)`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Синтаксическая ошибка';
+      setStatus('err', `Ошибка: ${msg}`);
+    }
+  }
+
+  document.getElementById('json-format-2')?.addEventListener('click', () => transform(2));
+  document.getElementById('json-format-4')?.addEventListener('click', () => transform(4));
+  document.getElementById('json-minify')?.addEventListener('click', () => transform(null));
+
+  document.getElementById('json-sample')?.addEventListener('click', () => {
+    if (!inputEl) return;
+    inputEl.value = JSON.stringify(sampleJson, null, 2);
+    validateOnly();
+  });
+
+  document.getElementById('json-clear')?.addEventListener('click', () => {
+    if (!inputEl) return;
+    inputEl.value = '';
+    validateOnly();
+  });
+
+  document.getElementById('json-copy')?.addEventListener('click', async () => {
+    if (!inputEl || !inputEl.value) return;
+    try {
+      await navigator.clipboard.writeText(inputEl.value);
+      setStatus('ok', 'Скопировано в буфер обмена');
+    } catch {
+      setStatus('err', 'Не удалось скопировать');
+    }
+  });
+
+  inputEl?.addEventListener('input', validateOnly);
+
+  if (inputEl) {
+    inputEl.value = JSON.stringify(sampleJson, null, 2);
+    validateOnly();
+  }
+</script>
